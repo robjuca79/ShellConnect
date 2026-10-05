@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net10.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<ImplicitUsings>enable</ImplicitUsings>
+
+		<LangVersion>15.0</LangVersion>
+
+		<Title>Connect Provider Enumerator</Title>
+		<Version>1.0.2026.10</Version>
+		<Authors>Roberto Jucá (robjuca@pobox.com) Copyright © R&amp;R Soft 2001</Authors>
+		<Company>R&amp;R Soft</Company>
+		<Description>This .NET assembly is a library.</Description>
+		<Copyright>R&amp;R Soft® is a registered trademark of R&amp;R Soft.</Copyright>
+
+		<AssemblyName>Connect.Provider.Enumerator</AssemblyName>
+
+		<BaseOutputPath>D:\GitHub\ShellConnect\Bin</BaseOutputPath>
+		<OutputPath>D:\GitHub\ShellConnect\Bin</OutputPath>
+		<OutputType>Library</OutputType>
+
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="desktop.ini" />
+	</ItemGroup>
+
+</Project>

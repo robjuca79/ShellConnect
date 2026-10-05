@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Provider/">
+    <Project Path="Provider/Message/Connect.Provider.Message.csproj" />
+    <Project Path="Provider/Interfaces/Connect.Provider.Interfaces.csproj" />
+  </Folder>
+  <Folder Name="/Process/">
+    <Project Path="Process/Dispatcher/Connect.Process.Dispatcher.csproj" />
+  </Folder>
+  <Folder Name="/Verification/">
+    <Project Path="Verification/Dispatcher/Connect.Dispatcher.Verification.csproj" />
+  </Folder>
+</Solution>
