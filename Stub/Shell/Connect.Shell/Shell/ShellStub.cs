@@ -3,6 +3,9 @@
   author: Roberto Oliveira Jucá    
 ----------------------------------------------------------------*/
 
+using SPAD.neXt.Interfaces;
+using SPAD.neXt.Interfaces.Events;
+
 namespace Connect.Shell;
 
 //----- TShellStub
@@ -30,7 +33,10 @@ public class TShellStub : ScriptStub
             }
 
             m_Lifetime = new CancellationTokenSource ();
-            ProfileChanged += OnProfileChanged;
+            //ProfileChanged += OnProfileChanged;
+
+            Application.SubscribeToSystemEvent (SPADSystemEvents.ProfileChanged, OnProfileChanged);
+
         }
     }
 
@@ -39,7 +45,7 @@ public class TShellStub : ScriptStub
         CancellationTokenSource? lifetime;
 
         lock (m_Gate) {
-            ProfileChanged -= OnProfileChanged;
+            //ProfileChanged -= OnProfileChanged;
             lifetime = m_Lifetime;
             m_Lifetime = null;
         }
@@ -54,7 +60,7 @@ public class TShellStub : ScriptStub
     #endregion
 
     #region Event
-    async void OnProfileChanged (IProfile profile, string propertyName)
+    async void OnProfileChanged (object sender, ISPADEventArgs args)//(IProfile profile, string propertyName)
     {
         CancellationToken token;
 
@@ -67,7 +73,7 @@ public class TShellStub : ScriptStub
         }
 
         try {
-            await PublishAsync (profile, token).ConfigureAwait (false);
+            //await PublishAsync (profile, token).ConfigureAwait (false);
         }
         catch (OperationCanceledException) when (token.IsCancellationRequested) {
             // Script deinitialization canceled pending delivery.

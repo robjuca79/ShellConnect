@@ -32,4 +32,7 @@
 	    <HintPath>..\..\..\Bin\Connect.Provider.Interface.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="xcopy &quot;$(TargetPath)&quot;  D:\SPAD.neXt\Addons /Y" />
+	</Target>
 </Project>

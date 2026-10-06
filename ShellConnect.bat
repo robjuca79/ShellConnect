@@ -29,6 +29,8 @@ CALL :error "Could not find Visual Studio directory."
 echo CLEANUP BIN
 cd "D:\GitHub\ShellConnect\Bin"
 erase /q /s Connect*.*
+cd "D:\SPAD.neXt\Addons"
+erase /q /s Connect*.*
 echo DONE
 echo.
 echo.
