@@ -10,7 +10,7 @@ public class TShellStub : ScriptStub
 {
     #region Constructor
     public TShellStub ()
-        : this (TEventDispatcherProvider.GetOrCreate (() => new Connect.Process.Dispatcher.TEventDispatcher ()))
+        : this (TEventDispatcherProcess.GetOrCreate (() => new Connect.Process.Dispatcher.TEventDispatcher ()))
     {
     }
 
@@ -24,12 +24,12 @@ public class TShellStub : ScriptStub
     #region Overrides
     protected override void InitializeScript ()
     {
-        lock (m_ProfileGate) {
-            if (m_ProfileLifetime is not null) {
+        lock (m_Gate) {
+            if (m_Lifetime is not null) {
                 return;
             }
 
-            m_ProfileLifetime = new CancellationTokenSource ();
+            m_Lifetime = new CancellationTokenSource ();
             ProfileChanged += OnProfileChanged;
         }
     }
@@ -38,10 +38,10 @@ public class TShellStub : ScriptStub
     {
         CancellationTokenSource? lifetime;
 
-        lock (m_ProfileGate) {
+        lock (m_Gate) {
             ProfileChanged -= OnProfileChanged;
-            lifetime = m_ProfileLifetime;
-            m_ProfileLifetime = null;
+            lifetime = m_Lifetime;
+            m_Lifetime = null;
         }
 
         if (lifetime is null) {
@@ -58,12 +58,12 @@ public class TShellStub : ScriptStub
     {
         CancellationToken token;
 
-        lock (m_ProfileGate) {
-            if (m_ProfileLifetime is null) {
+        lock (m_Gate) {
+            if (m_Lifetime is null) {
                 return;
             }
 
-            token = m_ProfileLifetime.Token;
+            token = m_Lifetime.Token;
         }
 
         try {
@@ -80,9 +80,9 @@ public class TShellStub : ScriptStub
 
     #region Fields
     protected override string ScriptDataPrefix => "";
-    CancellationTokenSource?                                    m_ProfileLifetime;
+    CancellationTokenSource?                                    m_Lifetime;
     readonly IEventDispatcher                                   m_EventDispatcher;
-    readonly object                                             m_ProfileGate = new ();
+    readonly object                                             m_Gate = new ();
     #endregion
 
     #region Support

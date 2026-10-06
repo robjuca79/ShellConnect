@@ -21,9 +21,11 @@
     <None Remove="desktop.ini" />
   </ItemGroup>
   <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Data\Provider.Data\Connect.Provider.Data.csproj" />
-    <ProjectReference Include="..\..\Enumerator\Provider.Enumerator\Connect.Provider.Enumerator.csproj" />
+    <Reference Include="Connect.Provider.Data">
+      <HintPath>..\..\..\Bin\Connect.Provider.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Connect.Provider.Enumerator">
+      <HintPath>..\..\..\Bin\Connect.Provider.Enumerator.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

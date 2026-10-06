@@ -8,7 +8,7 @@ namespace Connect.Process.Dispatcher;
 //----- TEventDispatcher
 public sealed class TEventDispatcher : IEventDispatcher
 {
-    #region Members
+    #region Interface
     public IDisposable Subscribe<TData> (UInternalOperationId receiver, Func<TMessageRecord<TData>, CancellationToken, Task> handler)
     {
         ArgumentNullException.ThrowIfNull (handler);
@@ -16,7 +16,7 @@ public sealed class TEventDispatcher : IEventDispatcher
         lock (m_Gate) {
             ObjectDisposedException.ThrowIf (m_Disposed, this);
 
-            var subscription = new Subscription<TData> (this, receiver, handler);
+            var subscription = new TSubscription<TData> (this, receiver, handler);
 
             m_Aggregator.Subscribe (subscription, callback => callback ());
             m_Subscriptions.Add (subscription);
@@ -50,50 +50,62 @@ public sealed class TEventDispatcher : IEventDispatcher
             }
         }
     }
+
+    public void Remove (IDisposable subscription)
+    {
+        lock (m_Gate) {
+            m_Aggregator.Unsubscribe (subscription);
+            m_Subscriptions.Remove (subscription);
+        }
+    }
     #endregion
 
-    private sealed class Subscription<TData> (TEventDispatcher owner,
-        UInternalOperationId receiver,
-        Func<TMessageRecord<TData>, CancellationToken, Task> handler)
-        : IHandle<TMessageRecord<TData>>, IDisposable
-    {
-        private int _disposed;
+    #region Fields
+    readonly EventAggregator                        m_Aggregator = new ();
+    readonly HashSet<IDisposable>                   m_Subscriptions = [];
+    bool                                            m_Disposed;
+    readonly object                                 m_Gate = new ();
+    #endregion
 
+    #region Internals
+    //----- TSubscription<TData>
+    sealed class TSubscription<TData> (
+        TEventDispatcher owner,
+        UInternalOperationId receiver,
+        Func<TMessageRecord<TData>, CancellationToken, Task> handler) : IHandle<TMessageRecord<TData>>, IDisposable
+    {
+        #region Memebers
         public async Task HandleAsync (TMessageRecord<TData> message, CancellationToken cancellationToken)
         {
-            if (Volatile.Read (ref _disposed) != 0 || message.Receiver != receiver)
+            if (Volatile.Read (ref m_Disposed) != 0 || message.Receiver != receiver) {
                 return;
+            }
+
             cancellationToken.ThrowIfCancellationRequested ();
+
             await Task.Run (async () =>
             {
-                if (Volatile.Read (ref _disposed) != 0)
+                if (Volatile.Read (ref m_Disposed) != 0) {
                     return;
+                }
+
                 cancellationToken.ThrowIfCancellationRequested ();
                 await handler (message, cancellationToken);
             }, cancellationToken).ConfigureAwait (false);
         }
 
-        public void Remove (IDisposable subscription)
-        {
-            lock (m_Gate) {
-                m_Aggregator.Unsubscribe (subscription);
-                m_Subscriptions.Remove (subscription);
-            }
-        }
-
         public void Dispose ()
         {
-            if (Interlocked.Exchange (ref _disposed, 1) == 0) {
+            if (Interlocked.Exchange (ref m_Disposed, 1) == 0) {
                 owner.Remove (this);
             }
         }
-    }
+        #endregion
 
-    #region Fields
-    readonly EventAggregator                        m_Aggregator = new ();
-    readonly object                                 m_Gate = new ();
-    readonly HashSet<IDisposable>                   m_Subscriptions = [];
-    bool                                            m_Disposed;
+        #region Fields
+        int                     m_Disposed;
+        #endregion
+    }
     #endregion
 };
 //---------------------------//
