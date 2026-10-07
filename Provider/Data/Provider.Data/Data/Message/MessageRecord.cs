@@ -1,4 +1,4 @@
-﻿/*------------------------------------------------------------
+/*------------------------------------------------------------
   Copyright (C) 2001 R & R Soft - All rights reserved.
   author: Roberto Oliveira Jucá
 ---------------------------------------------------------------- */
@@ -6,13 +6,14 @@
 namespace Connect.Provider.Data;
 
 //----- TMessageRecord<TData>
-public sealed record TMessageRecord<TData>
+public sealed record TMessageRecord<TData> : IMessageRecord<TData>
 {
     #region Property
     public UInternalOperationId Sender { get; }
     public UInternalOperationId Receiver { get; }
     public UInternalMessageId Message { get; }
     public TData Data { get; }
+    object? IMessageRecord.Data => Data;
     #endregion
 
     #region Constructor

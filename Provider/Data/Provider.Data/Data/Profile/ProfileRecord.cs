@@ -10,11 +10,17 @@ namespace Connect.Provider.Data;
 public sealed record TProfileRecord
 {
     #region Property
+    public string? Name { get; }
+    public string? Filename { get; }
+    public bool IsDummyProfile { get; }
     #endregion
 
     #region Constructor
-    public TProfileRecord (string? Name, string? Filename, bool IsDummyProfile)
+    public TProfileRecord (string? name, string? filename, bool isDummyProfile)
     {
+        Name = name;
+        Filename = filename;
+        IsDummyProfile = isDummyProfile;
     }
     #endregion
 

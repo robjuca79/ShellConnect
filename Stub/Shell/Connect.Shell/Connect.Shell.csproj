@@ -1,5 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<TargetFramework>net10.0-windows</TargetFramework>
 		<Nullable>enable</Nullable>
 		<UseWPF>true</UseWPF>
@@ -30,9 +31,6 @@
 		<None Remove="desktop.ini" />
 	</ItemGroup>
 	<ItemGroup>
-		<Reference Include="Connect.Process.Dispatcher">
-			<HintPath>..\..\..\Bin\Connect.Process.Dispatcher.dll</HintPath>
-		</Reference>
 		<Reference Include="Connect.Provider.Data">
 			<HintPath>..\..\..\Bin\Connect.Provider.Data.dll</HintPath>
 		</Reference>
@@ -48,6 +46,9 @@
 		</Reference>
 	</ItemGroup>
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="xcopy &quot;$(TargetPath)&quot;  D:\SPAD.neXt\Addons /Y" />
+		<Exec Condition="'$(SkipAddonDeployment)' != 'true'" Command="xcopy &quot;$(TargetPath)&quot;  D:\SPAD.neXt\Addons /Y" />
+	<Copy Condition="'$(SkipAddonDeployment)' != 'true'" SourceFiles="@(ReferenceCopyLocalPaths)" DestinationFolder="D:\SPAD.neXt\Addons" SkipUnchangedFiles="true" />
 	</Target>
+	<ItemGroup>
+	</ItemGroup>
 </Project>

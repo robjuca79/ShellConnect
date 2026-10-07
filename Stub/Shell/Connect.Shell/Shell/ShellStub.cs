@@ -3,96 +3,94 @@
   author: Roberto Oliveira Jucá    
 ----------------------------------------------------------------*/
 
-using SPAD.neXt.Interfaces;
-using SPAD.neXt.Interfaces.Events;
-
 namespace Connect.Shell;
 
 //----- TShellStub
 public class TShellStub : ScriptStub
 {
-    #region Constructor
-    public TShellStub ()
-        : this (TEventDispatcherProcess.GetOrCreate (() => new Connect.Process.Dispatcher.TEventDispatcher ()))
-    {
-    }
-
-    public TShellStub (IEventDispatcher eventDispatcher)
-    {
-        ArgumentNullException.ThrowIfNull (eventDispatcher);
-        m_EventDispatcher = eventDispatcher;
-    }
-    #endregion
-
     #region Overrides
     protected override void InitializeScript ()
     {
         lock (m_Gate) {
-            if (m_Lifetime is not null) {
+            if (m_Initialized) {
                 return;
             }
 
-            m_Lifetime = new CancellationTokenSource ();
-            //ProfileChanged += OnProfileChanged;
+            m_Initialized = true;
 
-            Application.SubscribeToSystemEvent (SPADSystemEvents.ProfileChanged, OnProfileChanged);
-
+            try {
+                Application.SubscribeToSystemEvent (SPADSystemEvents.ProfileChanged, OnProfileChanged);
+            }
+            catch {
+                m_Initialized = false;
+                //TCompositionHost.GetExport<IBootstrapper> ().Stop (this);
+                throw;
+            }
         }
+
+        // A profile may already be active before the script subscribes.
+        _ = PublishCurrentProfileAsync ();
     }
 
     protected override void DeinitializeScript ()
     {
-        CancellationTokenSource? lifetime;
-
         lock (m_Gate) {
-            //ProfileChanged -= OnProfileChanged;
-            lifetime = m_Lifetime;
-            m_Lifetime = null;
-        }
+            if (!m_Initialized) {
+                return;
+            }
 
-        if (lifetime is null) {
-            return;
-        }
+            Application.UnsubscribeFromSystemEvent (SPADSystemEvents.ProfileChanged, OnProfileChanged);
+            m_Initialized = false;
 
-        lifetime.Cancel ();
-        lifetime.Dispose ();
+            //TCompositionHost.GetExport<IBootstrapper> ().Stop (this);
+        }
     }
     #endregion
 
     #region Event
-    async void OnProfileChanged (object sender, ISPADEventArgs args)//(IProfile profile, string propertyName)
+    async void OnProfileChanged (object sender, ISPADEventArgs args)
     {
-        CancellationToken token;
+        await PublishCurrentProfileAsync ().ConfigureAwait (false);
+    }
+    #endregion
 
-        lock (m_Gate) {
-            if (m_Lifetime is null) {
+    #region Property
+    protected override string ScriptDataPrefix => "";
+    #endregion
+
+    #region Fields
+    bool                                                        m_Initialized;
+    readonly object                                             m_Gate = new ();
+    #endregion
+
+    #region Support
+    async Task PublishCurrentProfileAsync ()
+    {
+        try {
+            IProfile? profile;
+
+            lock (m_Gate) {
+                if (!m_Initialized is false) {
+                    return;
+                }
+
+                profile = Application.ActiveProfile;
+            }
+
+            if (profile is null || profile.IsDummyProfile) {
                 return;
             }
 
-            token = m_Lifetime.Token;
-        }
+            ScriptLogger?.Debug ("Publishing PROFILE_CHANGED for profile: {0}", profile.Name);
 
-        try {
-            //await PublishAsync (profile, token).ConfigureAwait (false);
-        }
-        catch (OperationCanceledException) when (token.IsCancellationRequested) {
-            // Script deinitialization canceled pending delivery.
+            await PublishAsync (profile).ConfigureAwait (false);
         }
         catch (Exception error) {
             ScriptLogger?.Error ("Cannot publish PROFILE_CHANGED: {0}", error);
         }
     }
-    #endregion
 
-    #region Fields
-    protected override string ScriptDataPrefix => "";
-    CancellationTokenSource?                                    m_Lifetime;
-    readonly IEventDispatcher                                   m_EventDispatcher;
-    readonly object                                             m_Gate = new ();
-    #endregion
-
-    #region Support
-    Task PublishAsync (IProfile profile, CancellationToken cancellationToken)
+    Task PublishAsync (IProfile profile)
     {
         var data = new TProfileRecord (profile?.Name, profile?.Filename, profile?.IsDummyProfile ?? true);
 
@@ -102,9 +100,8 @@ public class TShellStub : ScriptStub
             UInternalMessageId.PROFILE_CHANGED,
             data);
 
-        return m_EventDispatcher.PublishAsync (message, cancellationToken);
+        return TCompositionHost.GetExport<IEventDispatcher> ().PublishAsync<TProfileRecord> (message);
     }
     #endregion
 };
 //---------------------------//
-

@@ -19,15 +19,12 @@
 		<None Remove="desktop.ini" />
 	</ItemGroup>
 	<ItemGroup>
-		<Reference Include="Connect.Provider.Data">
-			<HintPath>..\..\..\Bin\Connect.Provider.Data.dll</HintPath>
-		</Reference>
 		<Reference Include="Connect.Provider.Enumerator">
 			<HintPath>..\..\..\Bin\Connect.Provider.Enumerator.dll</HintPath>
 		</Reference>
 	</ItemGroup>
 	<Target Name="PostBuild"
 			AfterTargets="PostBuildEvent">
-		<Exec Command="xcopy &quot;$(TargetPath)&quot;  D:\SPAD.neXt\Addons /Y" />
+		<Exec Condition="'$(SkipAddonDeployment)' != 'true'" Command="xcopy &quot;$(TargetPath)&quot;  D:\SPAD.neXt\Addons /Y" />
 	</Target>
 </Project>
