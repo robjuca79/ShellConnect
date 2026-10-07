@@ -55,6 +55,11 @@ echo.
 	echo.
 	echo.
 	echo.
+	echo -- Provider Composition ...
+	%build% "D:\GitHub\ShellConnect\Provider\Composition\Provider.Composition\Connect Provider Composition.slnx" /t:rebuild /verbosity:minimal /nologo
+	echo.
+	echo.
+	echo.
 	echo -- Process Dispatcher  ...
 	%build% "D:\GitHub\ShellConnect\Process\Dispatcher\Process.Dispatcher\Connect Process Dispatcher.slnx" /t:rebuild /verbosity:minimal /nologo
 	echo.

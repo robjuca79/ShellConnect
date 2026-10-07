@@ -1,3 +1,4 @@
+global using Connect.Provider.Composition;
 global using Connect.Provider.Data;
 global using Connect.Provider.Enumerator;
 global using Connect.Provider.Interface;

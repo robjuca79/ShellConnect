@@ -5,10 +5,10 @@
 
 namespace Connect.Provider.Data;
 
-/// <summary>An immutable snapshot captured when SPAD.neXt changes its active profile.</summary>
 //----- TProfileRecord
 public sealed record TProfileRecord
 {
+    /// <summary>An immutable snapshot captured when SPAD.neXt changes its active profile.</summary>
     #region Property
     public string? Name { get; }
     public string? Filename { get; }
@@ -22,18 +22,6 @@ public sealed record TProfileRecord
         Filename = filename;
         IsDummyProfile = isDummyProfile;
     }
-    #endregion
-
-    #region Members
-    #endregion
-
-    #region Fields
-    #endregion
-
-    #region Support
-    #endregion
-
-    #region Static
     #endregion
 };
 //---------------------------//

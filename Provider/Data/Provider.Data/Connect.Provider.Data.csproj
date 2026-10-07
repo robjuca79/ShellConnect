@@ -1,39 +1,42 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <TargetFramework>net10.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <UseWPF>true</UseWPF>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <LangVersion>15.0</LangVersion>
-    <Title>Connect Provider Data</Title>
-    <Version>1.0.2026.10</Version>
-    <Authors>Roberto Jucá (robjuca@pobox.com) Copyright © R&amp;R Soft 2001</Authors>
-    <Company>R&amp;R Soft</Company>
-    <Description>This .NET assembly is a library.</Description>
-    <Copyright>R&amp;R Soft® is a registered trademark of R&amp;R Soft.</Copyright>
-    <AssemblyName>Connect.Provider.Data</AssemblyName>
-    <BaseOutputPath>D:\GitHub\ShellConnect\Bin</BaseOutputPath>
-    <OutputPath>D:\GitHub\ShellConnect\Bin</OutputPath>
-    <OutputType>Library</OutputType>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Remove="desktop.ini" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Connect.Provider.Enumerator">
-      <HintPath>..\..\..\Bin\Connect.Provider.Enumerator.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Condition="'$(SkipAddonDeployment)' != 'true'" Command="xcopy &quot;$(TargetPath)&quot;  D:\SPAD.neXt\Addons /Y" />
-  <Copy Condition="'$(SkipAddonDeployment)' != 'true'" SourceFiles="@(ReferenceCopyLocalPaths)" DestinationFolder="D:\SPAD.neXt\Addons" SkipUnchangedFiles="true" />
-  </Target>
-  <ItemGroup>
-    <PackageReference Include="System.ComponentModel.Composition" Version="10.0.12" />
-    <Reference Include="Connect.Provider.Interface">
-      <HintPath>../../../Bin/Connect.Provider.Interface.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+	<PropertyGroup>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<TargetFramework>net10.0-windows</TargetFramework>
+		<UseWPF>true</UseWPF>
+		<Nullable>enable</Nullable>
+		<PlatformTarget>x64</PlatformTarget>
+		<ImplicitUsings>enable</ImplicitUsings>
+
+		<Title>Connect Provider Data</Title>
+		<Version>1.0.2026.10</Version>
+		<Authors>Roberto Jucá (robjuca@pobox.com) Copyright © R&amp;R Soft 2001</Authors>
+		<Company>R&amp;R Soft</Company>
+		<Description>This .NET assembly is a library.</Description>
+		<Copyright>R&amp;R Soft® is a registered trademark of R&amp;R Soft.</Copyright>
+
+		<AssemblyName>Connect.Provider.Data</AssemblyName>
+
+
+		<OutputPath>D:\GitHub\ShellConnect\Bin</OutputPath>
+		<OutputType>Library</OutputType>
+
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	</PropertyGroup>
+	<ItemGroup>
+		<None Remove="desktop.ini" />
+	</ItemGroup>
+	<ItemGroup>
+		<Reference Include="Connect.Provider.Enumerator">
+			<HintPath>..\..\..\Bin\Connect.Provider.Enumerator.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Condition="'$(SkipAddonDeployment)' != 'true'" Command="xcopy &quot;$(TargetPath)&quot;  D:\SPAD.neXt\Addons /Y" />
+		<Copy Condition="'$(SkipAddonDeployment)' != 'true'" SourceFiles="@(ReferenceCopyLocalPaths)" DestinationFolder="D:\SPAD.neXt\Addons" SkipUnchangedFiles="true" />
+	</Target>
+	<ItemGroup>
+		<Reference Include="Connect.Provider.Interface">
+			<HintPath>../../../Bin/Connect.Provider.Interface.dll</HintPath>
+		</Reference>
+	</ItemGroup>
 </Project>

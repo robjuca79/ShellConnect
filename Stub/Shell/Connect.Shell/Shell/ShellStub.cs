@@ -70,14 +70,14 @@ public class TShellStub : ScriptStub
             IProfile? profile;
 
             lock (m_Gate) {
-                if (!m_Initialized is false) {
+                if (m_Initialized is false) {
                     return;
                 }
 
                 profile = Application.ActiveProfile;
             }
 
-            if (profile is null || profile.IsDummyProfile) {
+            if (profile is null || profile.IsDummyProfile || profile.Name.Equals ("No profile")) {
                 return;
             }
 

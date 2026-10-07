@@ -18,7 +18,7 @@ public sealed class TEventDispatcher : IEventDispatcher
         lock (m_Gate) {
             ObjectDisposedException.ThrowIf (m_Disposed, this);
 
-            var subscription = new TAllMessagesSubscription (this, handler);
+            var subscription = new TSubscription (this, handler);
             m_Aggregator.Subscribe (subscription, callback => callback ());
             m_Subscriptions.Add (subscription);
 
@@ -85,7 +85,8 @@ public sealed class TEventDispatcher : IEventDispatcher
     #endregion
 
     #region Internals
-    sealed class TAllMessagesSubscription (
+    //----- TSubscription
+    sealed class TSubscription (
         TEventDispatcher owner,
         Func<IMessageRecord, Task> handler) : IHandle<IMessageRecord>, IDisposable
     {

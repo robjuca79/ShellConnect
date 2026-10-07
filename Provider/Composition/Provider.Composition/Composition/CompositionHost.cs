@@ -3,34 +3,27 @@
   author: Roberto Oliveira Jucá    
 ----------------------------------------------------------------*/
 
-namespace Connect.Provider.Data;
+namespace Connect.Provider.Composition;
 
-// Owns composition for the process; script deinitialization must not dispose
-// services still used by other scripts.
 //----- TCompositionHost
 public static class TCompositionHost
 {
-    static readonly object m_Gate = new ();
-    static DirectoryCatalog? m_Catalog;
-    static CompositionContainer? m_Container;
-    static bool m_ShuttingDown;
-
+    // Owns composition for the process; script deinitialization must not dispose
+    // services still used by other scripts.
+    #region Constructor
     static TCompositionHost ()
     {
         AppDomain.CurrentDomain.ProcessExit += (_, _) => Shutdown ();
     }
+    #endregion
 
+    #region Members
     public static T GetExport<T> () where T : class
     {
         lock (m_Gate) {
             ObjectDisposedException.ThrowIf (m_ShuttingDown, typeof (TCompositionHost));
 
             if (m_Container is null) {
-                //string directory =
-                //    Path.GetDirectoryName (typeof (TCompositionHost).Assembly.Location)
-                //    ??
-                //    throw new InvalidOperationException ("Cannot locate the Connect component directory.");
-
                 var directory = new DirectoryInfo (@"D:\SPAD.neXt\AddOns");
                 var catalog = new DirectoryCatalog (directory.FullName, "Connect.*.dll");
 
@@ -50,7 +43,16 @@ public static class TCompositionHost
                 ?? throw new InvalidOperationException ($"The export for {typeof (T).FullName} is null.");
         }
     }
+    #endregion
 
+    #region Fields
+    static readonly object                                              m_Gate = new ();
+    static DirectoryCatalog?                                            m_Catalog;
+    static CompositionContainer?                                        m_Container;
+    static bool                                                         m_ShuttingDown;
+    #endregion
+
+    #region Support
     static void Shutdown ()
     {
         lock (m_Gate) {
@@ -65,6 +67,7 @@ public static class TCompositionHost
             }
         }
     }
+    #endregion
 }
 //---------------------------//
 

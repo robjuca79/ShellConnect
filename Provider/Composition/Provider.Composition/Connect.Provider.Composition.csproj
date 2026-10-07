@@ -1,5 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
 	<PropertyGroup>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<TargetFramework>net10.0-windows</TargetFramework>
 		<UseWPF>true</UseWPF>
 		<Nullable>enable</Nullable>
@@ -8,14 +10,14 @@
 
 		<LangVersion>15.0</LangVersion>
 
-		<Title>Connect Provider Enumerator</Title>
+		<Title>Connect Provider Composition</Title>
 		<Version>1.0.2026.10</Version>
 		<Authors>Roberto Jucá (robjuca@pobox.com) Copyright © R&amp;R Soft 2001</Authors>
 		<Company>R&amp;R Soft</Company>
 		<Description>This .NET assembly is a library.</Description>
 		<Copyright>R&amp;R Soft® is a registered trademark of R&amp;R Soft.</Copyright>
 
-		<AssemblyName>Connect.Provider.Enumerator</AssemblyName>
+		<AssemblyName>Connect.Provider.Composition</AssemblyName>
 
 
 		<OutputPath>D:\GitHub\ShellConnect\Bin</OutputPath>
@@ -28,10 +30,12 @@
 		<None Remove="desktop.ini" />
 	</ItemGroup>
 
-	<Target Name="PostBuild"
-			AfterTargets="PostBuildEvent">
-		<Exec Condition="'$(SkipAddonDeployment)' != 'true'"
-			  Command="xcopy &quot;$(TargetPath)&quot;  D:\SPAD.neXt\Addons /Y" />
+	<ItemGroup>
+	  <PackageReference Include="System.ComponentModel.Composition" Version="11.0.0-rc.1.26425.128" />
+	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Condition="'$(SkipAddonDeployment)' != 'true'" Command="xcopy &quot;$(TargetPath)&quot;  D:\SPAD.neXt\Addons /Y" />
 	</Target>
 
 </Project>
